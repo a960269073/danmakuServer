@@ -1,0 +1,2 @@
+# danmakuServer
+通过RockMQ以及WebSocket实现实时弹幕推送功能
