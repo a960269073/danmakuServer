@@ -1,0 +1,88 @@
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>弹幕聊天室 By Hi_old</title>
+    <link href="css/index.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="css/default.css">
+    <link rel="stylesheet" type="text/css" href="css/search-form.css">
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <!--<script src="js/kinetic-v5.1.0.min.js"></script>-->
+    <script src="js/ocanvas-2.9.1.min.js"></script>
+</head>
+<body onresize="onResize()">
+<canvas id="container"></canvas>
+
+
+<form onsubmit="submitFn(this, event);">
+    <div class="search-wrapper">
+        <div class="input-holder">
+            <input type="text" class="search-input" placeholder="弹幕准备! _(:з」∠)_ "/>
+            <button class="customButton" onclick="searchToggle(this, event);"><span></span>
+            </button>
+        </div>
+        <span class="close" onclick="searchToggle(this, event);"></span>
+        <div class="result-container">
+
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    function searchToggle(obj, evt) {
+        var container = $(obj).closest('.search-wrapper');
+
+        if (!container.hasClass('active')) {
+            container.addClass('active');
+            evt.preventDefault();
+        }
+        else if (container.hasClass('active') && $(obj).closest('.input-holder').length == 0) {
+            container.removeClass('active');
+            // clear input
+            container.find('.search-input').val('');
+            // clear and hide result container when we press close
+            container.find('.result-container').fadeOut(100, function () {
+                $(this).empty();
+            });
+        }
+    }
+
+    function submitFn(obj, evt) {
+        value = $(obj).find('.search-input').val().trim();
+
+        _html = "发射完成!  ๑乛◡乛๑ ";
+        if (!value.length) {
+            _html = "啥都没发生!（╯#-_-)╯╧═╧ ";
+        } else {
+            _html += "<b>" + value + "</b>";
+
+            //访问弹幕服务器
+            $.ajax({
+                url: "service/danmaku",
+                type: 'GET', // GET
+                async: true, // 或false,是否异步
+                data: {
+                    danmaku: value
+                },
+                timeout: 5000, // 超时时间
+                dataType: 'json', // 返回的数据格式：json/xml/html/script/jsonp/text
+                success: function (data, textStatus, jqXHR) {
+                    console.log("弹幕发送成功!");
+                    console.log(data);
+                },
+                error: function (xhr, textStatus) {
+                    console.error("网络连接出现异常,请重试！");
+                }
+            });
+
+        }
+
+
+        $(obj).find('.result-container').html('<span>' + _html + '</span>');
+        $(obj).find('.result-container').fadeIn(100);
+
+        evt.preventDefault();
+    }
+</script>
+<script src="js/controller.js"></script>
+</body>
+</html>
